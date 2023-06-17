@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Joi = require("joi");
 const { valid } = require("joi");
-const { response } = require("../app");
 const prisma = new PrismaClient();
 
 const validationSchema = Joi.object({
@@ -78,17 +77,17 @@ router.get('/', (req, res) => {
  */
 router.post('/signup', async (req, res, next) => {
   const result = await validationSchema.validateAsync(req.body);
-  if(result.error === undefined){
+  if (result.error === undefined) {
     const user = await prisma.user.findFirst({
-      where: { email: req.body.email}
+      where: { email: req.body.email }
     });
-    if(user){
+    if (user) {
 
-       error = new Error('Email has already been taken.');
+      error = new Error('Email has already been taken.');
       res.status(409);
       next(error);
 
-    }else{
+    } else {
       const hashPass = await bcrypt.hash(req.body.password, parseInt(process.env.PASSWORD_SALT));
       const resultUser = await prisma.user.create({
         data: {
@@ -96,11 +95,11 @@ router.post('/signup', async (req, res, next) => {
           password: hashPass,
           fname: req.body.fname,
           lname: req.body.lname,
-          boards:{
-            create:{
-              title:'',
-              tasks:{
-                create:{
+          boards: {
+            create: {
+              title: '',
+              tasks: {
+                create: {
                   title: "",
                 },
               },
@@ -110,8 +109,8 @@ router.post('/signup', async (req, res, next) => {
       })
       console.log(resultUser);
       createTokenSendResponse(resultUser, res, next);
-    } 
-  }else{
+    }
+  } else {
     respondError422(res, next);
   }
 });
@@ -123,21 +122,21 @@ router.post('/signup', async (req, res, next) => {
  */
 router.post('/login', async (req, res, next) => {
   const result = await validationSchema.validateAsync(req.body);
-  if(result.error === undefined){
+  if (result.error === undefined) {
     const user = await prisma.user.findFirst({
-      where: { email: req.body.email}
+      where: { email: req.body.email }
     });
-    if(user){
+    if (user) {
       const valid = await bcrypt.compare(req.body.password, user.password);
-      if(valid){
+      if (valid) {
         createTokenSendResponse(user, res, next);
-      }else{
+      } else {
         respondError422(res, next);
       }
-    }else{
+    } else {
       respondError422(res, next);
-    } 
-  }else{
+    }
+  } else {
     respondError422(res, next);
   }
 })

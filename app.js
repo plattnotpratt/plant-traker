@@ -5,6 +5,7 @@ const cors = require('cors');
 const authmw = require('./auth/middlewares');
 const boards = require('./api/boards');
 const tasks = require('./api/tasks');
+const plants = require('./api/plants');
 
 require('dotenv').config();
 
@@ -31,8 +32,10 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', auth);
-app.use('/api/v1/boards', authmw.isLoggedIn, boards);
+app.use('/api/v1/pla', authmw.isLoggedIn, boards);
 app.use('/api/v1/tasks', authmw.isLoggedIn, tasks);
+app.use('/api/v1/plants', plants);
+app.use('/api/v1/plant-images', plant - images);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

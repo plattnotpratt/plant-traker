@@ -39,6 +39,11 @@ router.get('/:id', async (req, res) => {
     try {
         const plant = await prisma.plant.findUnique({
             where: { id: parseInt(id) },
+            include: {
+                plantImages: {
+                    select: { plantImageUrl: true }
+                }
+            }
         });
         if (!plant) {
             return res.status(404).json({ error: 'Plant not found' });
